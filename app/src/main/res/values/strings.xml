@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">MY AXISVOICE</string>
+    <string name="edittext_hint_email"><font size="12">Email</font></string>
+    <string name="edittext_hint_address"><font size="12">Address</font></string>
+    <string name="edittext_hint_displayname"><font size="12">Display Name</font></string>
+    <string name="edittext_hint_phone"><font size="12">Phone Number</font></string>
+    <string name="edittext_hint_password"><font size="12">Password</font></string>
+    <string name="login"><font size="12">Login</font></string>
+    <string name="password_hint">Password</string>
+    <string name="email_hint">Email</string>
+    <string name="sign_up_button_label">Sign Up</string>
+    <string name="signup_error_message">Please make sure you enter an email address and password!</string>
+    <string name="confirm_fail_error">Password does not match</string>
+    <string name="signup_error_title">Error!</string>
+    <string name="signup_success">Account successfully created! You can now Login.</string>
+    <string name="login_error_message">Please make sure you enter an email address and password!</string>
+    <string name="login_error_title">Error!</string>
+    <string name="login_button_label">Login</string>
+    <string name="sign_up_text">Sign Up!</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="add_item">Add New Item</string>
+    <string name="action_logout">Logout</string>
+    <string name="title_activity_main">MY AXISVOICE</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>

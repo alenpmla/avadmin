@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "567658990459",
+    "firebase_url": "https://project-3363810000149996090.firebaseio.com",
+    "project_id": "project-3363810000149996090",
+    "storage_bucket": "project-3363810000149996090.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567658990459:android:b8563b861a912e5b",
+        "android_client_info": {
+          "package_name": "in.codme.axisvoiceadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567658990459-0fcjvr7n7uabtc44f0gshbvu23n31rro.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ5oioYseUc917YKYQvGb8sysTJp3wHHU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
