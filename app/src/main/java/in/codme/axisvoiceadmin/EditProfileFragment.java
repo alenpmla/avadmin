@@ -17,10 +17,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -28,14 +37,29 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * Created by Alen on 26-Jun-16.
  */
 public class EditProfileFragment extends Fragment {
-
+    String namesr,addresssr,phonenumbersr,imageurlsr;
     final int SELECT_PHOTO=202;
        CircleImageView profile_image;
+       EditText displayname,phonenumber,address;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView=inflater.inflate(R.layout.fragment_edit_profile,container,false);
         setHasOptionsMenu(true);
+
+
+         displayname=(EditText)rootView.findViewById(R.id.displayname);
+           phonenumber=(EditText)rootView.findViewById(R.id.phonenumber);
+            address=(EditText)rootView.findViewById(R.id.address);
+        Bundle bundle = getArguments();
+        namesr=   bundle.getString("name","");
+        addresssr=bundle.getString("addresssr","");
+        phonenumbersr=bundle.getString("phonenumbersr","");
+        imageurlsr=bundle.getString("imageurlsr","");
+
+        displayname.setText(namesr);
+        phonenumber.setText(phonenumbersr);
+        address.setText(addresssr);
 
           profile_image=(CircleImageView)rootView.findViewById(R.id.profile_image);
 
@@ -71,6 +95,18 @@ public class EditProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 getActivity().onBackPressed();
+                FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("users");
+                DatabaseReference newref = myRef.child(usernew.getUid());
+
+                Map<String,Object>map=new HashMap<String, Object>();
+
+                map.put("display_name",displayname.getText().toString());
+                map.put("phone_number",phonenumber.getText().toString());
+                map.put("address",address.getText().toString());
+                map.put("img_url",imageurlsr);
+                newref.updateChildren(map);
             }
         });
 
@@ -93,7 +129,18 @@ public class EditProfileFragment extends Fragment {
         if (id == R.id.action_save) {
 
            getActivity().onBackPressed();
+            FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("users");
+            DatabaseReference newref = myRef.child(usernew.getUid());
 
+            Map<String,Object>map=new HashMap<String, Object>();
+
+            map.put("display_name",displayname.getText().toString());
+            map.put("phone_number",phonenumber.getText().toString());
+            map.put("address",address.getText().toString());
+            map.put("img_url",imageurlsr);
+            newref.updateChildren(map);
             return true;
         }
 

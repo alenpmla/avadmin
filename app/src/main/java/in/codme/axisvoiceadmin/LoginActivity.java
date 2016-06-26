@@ -40,8 +40,24 @@ public class LoginActivity extends AppCompatActivity {
         loginbutton=(Button)findViewById(R.id.loginbtn);
         username=(EditText)findViewById(R.id.usernamelg);
         passwordet=(EditText)findViewById(R.id.passwordlg);
+
         mAuth = FirebaseAuth.getInstance();
 
+
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null)
+        {
+            Log.d(TAG, " signed in");
+            // User is signed in
+            Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            // User is signed out
+            Log.d(TAG, "not signed in");
+
+        }
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -50,18 +66,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    SharedPreferences sharedPreferences=getSharedPreferences("APP_DATA",MODE_PRIVATE);
-                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                    editor.putBoolean("reg",true);
-                    editor.commit();
+
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
 
-                    SharedPreferences sharedPreferences=getSharedPreferences("APP_DATA",MODE_PRIVATE);
-                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                    editor.putBoolean("reg",false);
-                    editor.commit();
+
                 }
                 // ...
             }
@@ -69,46 +79,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
         SharedPreferences sharedPreferences=getSharedPreferences("APP_DATA",MODE_PRIVATE);
-        if(sharedPreferences.getBoolean("reg",false)){
 
-             final ProgressDialog progressDialog=new ProgressDialog(this);
-            progressDialog.setMessage("Authenticating");
-            progressDialog.show();
-
-
-            mAuth.signInWithEmailAndPassword(sharedPreferences.getString("useremail",""), sharedPreferences.getString("password",""))
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-                            progressDialog.dismiss();
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
-                            if (!task.isSuccessful()) {
-                                Log.w(TAG, "signInWithEmail", task.getException());
-                                Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-
-                                Intent intent=new Intent(LoginActivity.this,MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-
-                            // ...
-                        }
-                    });
-
-
-        }
-
-
-
-
-
-
+        System.out.println("username is"+sharedPreferences.getString("useremail",""));
+        System.out.println("pwd is"+sharedPreferences.getString("password",""));
 
         loginbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,12 +124,14 @@ public class LoginActivity extends AppCompatActivity {
                                     else{
                                         SharedPreferences sharedPreferences=getSharedPreferences("APP_DATA",MODE_PRIVATE);
                                         SharedPreferences.Editor editor=sharedPreferences.edit();
-                                        editor.putBoolean("reg",true);
                                         editor.putString("useremail",emailAddress);
                                         editor.putString("password",passwordtemp);
                                         editor.commit();
                                         Toast.makeText(LoginActivity.this, "Authentication Success.",
                                                 Toast.LENGTH_SHORT).show();
+
+                                        System.out.println("username is"+sharedPreferences.getString("useremail",""));
+                                        System.out.println("pwd is"+sharedPreferences.getString("password",""));
                                         Intent intent=new Intent(LoginActivity.this,MainActivity.class);
                                         startActivity(intent);
                                         finish();
