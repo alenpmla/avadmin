@@ -21,9 +21,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Alen on 26-Jun-16.
@@ -42,6 +45,7 @@ public class ProfileFragment extends Fragment {
         final   TextView emailid=(TextView)rootView.findViewById(R.id.emailid);
         final  TextView phonenumber=(TextView)rootView.findViewById(R.id.phonenumber);
         final  TextView address=(TextView)rootView.findViewById(R.id.address);
+        final CircleImageView profile_image=(CircleImageView)rootView.findViewById(R.id.profile_image);
 
         if (usernew != null) {
             // User is signed in
@@ -70,6 +74,11 @@ public class ProfileFragment extends Fragment {
                     emailid.setText(userClass.getEmail());
                     phonenumber.setText(userClass.getPhone_number());
                     address.setText(userClass.getAddress());
+try{
+    Picasso.with(getActivity().getApplicationContext()).load(userClass.getImg_url()).into(profile_image);
+}catch (NullPointerException ne){
+ne.printStackTrace();
+}
 
                     namesr=userClass.getDisplay_name();
                     addresssr=userClass.getAddress();

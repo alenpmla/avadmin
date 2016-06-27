@@ -92,7 +92,7 @@ android:layout_margin="5dp"
                     android:layout_margin="5dp"
                     android:textColor="@android:color/white"
                     android:background="@android:color/transparent"
-                    android:text="Admin Panel"
+                    android:text="CDR Panel"
                     android:id="@+id/btn_cdr_panel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -124,7 +124,7 @@ android:layout_weight="2"
             android:textColor="@android:color/white"
             android:singleLine="true"
             android:marqueeRepeatLimit="marquee_forever"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+            android:text=""
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

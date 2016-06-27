@@ -6,8 +6,10 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
@@ -21,11 +23,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +50,8 @@ public class EditProfileFragment extends Fragment {
     final int SELECT_PHOTO=202;
        CircleImageView profile_image;
        EditText displayname,phonenumber,address;
+    Boolean imgchanged=false;
+    Bitmap imgtouploadbm;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,6 +74,12 @@ public class EditProfileFragment extends Fragment {
 
           profile_image=(CircleImageView)rootView.findViewById(R.id.profile_image);
 
+        try{
+            Picasso.with(getActivity().getApplicationContext()).load(imageurlsr).into(profile_image);
+        }
+    catch (NullPointerException ne){
+        ne.printStackTrace();
+    }
         profile_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,19 +111,28 @@ public class EditProfileFragment extends Fragment {
         savebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().onBackPressed();
-                FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
-                final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference("users");
-                DatabaseReference newref = myRef.child(usernew.getUid());
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                Map<String,Object>map=new HashMap<String, Object>();
+                ProfileFragment profileFragment = new ProfileFragment();
+                fragmentTransaction.replace(R.id.container, profileFragment);
 
-                map.put("display_name",displayname.getText().toString());
-                map.put("phone_number",phonenumber.getText().toString());
-                map.put("address",address.getText().toString());
-                map.put("img_url",imageurlsr);
-                newref.updateChildren(map);
+                fragmentTransaction.commit();
+                if(imgchanged){
+                    uploadpic();
+                }
+                else {
+                    FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("users");
+                    DatabaseReference newref = myRef.child(usernew.getUid());
+                    Map<String,Object>map=new HashMap<String, Object>();
+
+                    map.put("display_name",displayname.getText().toString());
+                    map.put("phone_number",phonenumber.getText().toString());
+                    map.put("address",address.getText().toString());
+                    newref.updateChildren(map);
+                }
             }
         });
 
@@ -128,19 +154,32 @@ public class EditProfileFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_save) {
 
-           getActivity().onBackPressed();
-            FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("users");
-            DatabaseReference newref = myRef.child(usernew.getUid());
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-            Map<String,Object>map=new HashMap<String, Object>();
+            ProfileFragment profileFragment = new ProfileFragment();
+            fragmentTransaction.replace(R.id.container, profileFragment);
 
-            map.put("display_name",displayname.getText().toString());
-            map.put("phone_number",phonenumber.getText().toString());
-            map.put("address",address.getText().toString());
-            map.put("img_url",imageurlsr);
-            newref.updateChildren(map);
+            fragmentTransaction.commit();
+
+
+
+            if(imgchanged){
+                uploadpic();
+            }
+            else {
+                FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("users");
+                DatabaseReference newref = myRef.child(usernew.getUid());
+                Map<String,Object>map=new HashMap<String, Object>();
+
+                map.put("display_name",displayname.getText().toString());
+                map.put("phone_number",phonenumber.getText().toString());
+                map.put("address",address.getText().toString());
+                newref.updateChildren(map);
+            }
+
             return true;
         }
 
@@ -162,13 +201,67 @@ public class EditProfileFragment extends Fragment {
         Bitmap bm=null;
         if (data != null) {
             try {
+
+
+
                 bm = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), data.getData());
+                imgchanged=true;
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        else {
+            imgchanged=false;
+        }
         profile_image.setImageBitmap(bm);
+        imgtouploadbm=bm;
     }
 
+public void uploadpic(){
+    profile_image.setImageBitmap(imgtouploadbm);
+    FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
 
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReferenceFromUrl("gs://project-3363810000149996090.appspot.com");
+    StorageReference users = storageRef.child("users").child(usernew.getUid());
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    imgtouploadbm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+    byte[] dataimg = baos.toByteArray();
+
+    UploadTask uploadTask = users.putBytes(dataimg);
+    uploadTask.addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+            // Handle unsuccessful uploads
+        }
+    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        @Override
+        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            Toast.makeText(getActivity(),"upload success",Toast.LENGTH_SHORT).show();
+            try{
+                Picasso.with(getActivity().getApplicationContext()).load(downloadUrl.toString()).into(profile_image);
+            }catch (NullPointerException ne){
+                ne.printStackTrace();
+            }
+
+            FirebaseUser usernew = FirebaseAuth.getInstance().getCurrentUser();
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("users");
+            DatabaseReference newref = myRef.child(usernew.getUid());
+            Map<String,Object>map=new HashMap<String, Object>();
+
+            map.put("display_name",displayname.getText().toString());
+            map.put("phone_number",phonenumber.getText().toString());
+            map.put("address",address.getText().toString());
+            map.put("img_url",downloadUrl.toString());
+            newref.updateChildren(map);
+        }
+    });
+
+
+}
 }

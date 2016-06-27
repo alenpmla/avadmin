@@ -28,9 +28,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Alen on 26-Jun-16.
@@ -44,7 +47,7 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView=inflater.inflate(R.layout.fragment_home,container,false);
+        final View rootView=inflater.inflate(R.layout.fragment_home,container,false);
 
         LinearLayout adminpanellay=(LinearLayout)rootView.findViewById(R.id.adminpanellay);
         LinearLayout cdrpanellay=(LinearLayout)rootView.findViewById(R.id.cdrpanellay);
@@ -84,14 +87,16 @@ public class HomeFragment extends Fragment {
             // User is signed in
 
 
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("users");
-
-
             Map<String,Object> map=new HashMap<>();
             map.put("name",usernew.getDisplayName());
             map.put("email",usernew.getEmail());
+
+
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("users");
+
             myRef.child(usernew.getUid()).updateChildren(map);
+
 
 
 
@@ -102,6 +107,8 @@ public class HomeFragment extends Fragment {
             newref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+
+
 
                     System.out.println("changed"+dataSnapshot.getValue(String.class));
                     scrollmsg.setText(dataSnapshot.getValue(String.class));
