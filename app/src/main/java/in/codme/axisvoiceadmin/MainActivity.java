@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     final String TAG="MainActivity";
+    String myofrurl="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity
 
                         drawrname.setText(userClass.getDisplay_name());
                         draweremai.setText(userClass.getEmail());
-
+                        myofrurl=userClass.getMyofferurl();
                         try{
                             Picasso.with(getApplicationContext()).load(userClass.getImg_url()).into(drawepropic);
                         }catch (NullPointerException ne){
@@ -199,8 +200,10 @@ public class MainActivity extends AppCompatActivity
 
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
+            Bundle bundle=new Bundle();
+            bundle.putString("url",myofrurl);
             ProfileFragment profileFragment = new ProfileFragment();
+            profileFragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.container, profileFragment);
             fragmentTransaction.commit();
 
@@ -208,16 +211,20 @@ public class MainActivity extends AppCompatActivity
 
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
+            Bundle bundle=new Bundle();
+            bundle.putString("url",myofrurl);
             RateFragment rateFragment = new RateFragment();
+            rateFragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.container, rateFragment);
             fragmentTransaction.commit();
 
         } else if (id == R.id.nav_offer) {
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
+            Bundle bundle=new Bundle();
+            bundle.putString("url",myofrurl);
             MyOfferFragment myOfferFragment = new MyOfferFragment();
+            myOfferFragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.container, myOfferFragment);
             fragmentTransaction.commit();
         }
